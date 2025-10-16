@@ -44,6 +44,9 @@ export default function Dashboard() {
         <button className="nav-btn" onClick={() => setScreen('routes')}>
           🗺️ Routes
         </button>
+        <button className="nav-btn" onClick={() => setScreen('security')}>
+          🛡️ Security
+        </button>
       </nav>
 
       <div className="dashboard-content">
@@ -82,6 +85,7 @@ export default function Dashboard() {
                 {ship.status === 'sailing' && ship.route && (
                   <div className="ship-progress">
                     <p>{ship.route.name}</p>
+                    <p className="small">⚔️ W:{ship.weaponScore||0} 🛡️ D:{ship.defenseScore||0}</p>
                     <div className="progress-bar">
                       <div className="progress-fill" style={{ width: `${ship.position * 100}%` }} />
                     </div>
@@ -92,15 +96,31 @@ export default function Dashboard() {
                 {ship.status === 'idle' && (
                   <div className="ship-idle">
                     <p>Ready for action!</p>
-                    <button className="btn-small" onClick={() => setScreen('loading')}>
-                      Load Cargo
-                    </button>
+                    <div style={{display:'flex',gap:8}}>
+                      <button className="btn-small" onClick={() => setScreen('loading')}>
+                        Load Cargo
+                      </button>
+                      <button className="btn-small" onClick={() => setScreen('security')}>
+                        Security
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
             ))}
           </div>
         </section>
+
+        {ships.some(s => s.lastEvent) && (
+          <section>
+            <h2>📰 Latest Events</h2>
+            <div className="tips">
+              {ships.filter(s => s.lastEvent).map(s => (
+                <div key={s.id} className="tip">{s.name}: {s.lastEvent}</div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="tips-section">
           <h2>💡 Quick Tips</h2>

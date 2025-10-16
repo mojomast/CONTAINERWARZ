@@ -12,8 +12,9 @@ export interface CargoType {
 export interface PremiumVariant {
   name: string;
   percentage: number; // 0-1
-  multiplier: number;
+  multiplier: number; // price multiplier
   description: string;
+  extraCostPerUnit?: number; // additional cost per unit (licenses, supplies, care)
 }
 
 export interface CargoItem {
@@ -24,6 +25,7 @@ export interface CargoItem {
   totalValue: number;
   totalWeight: number;
   totalVolume: number;
+  totalExtraCost?: number; // accumulated extra costs (per-unit)
 }
 
 export type ContainerType = '20ft' | '40ft';
@@ -54,6 +56,26 @@ export interface ContainerAnalysis {
   valuePerPound: number;
 }
 
+export type Threat = 'pirates' | 'coastguard' | 'army' | 'greenpeace';
+
+export interface SecurityItem {
+  id: string;
+  name: string;
+  cost: number;
+  weaponBonus?: number;
+  defenseBonus?: number;
+  description?: string;
+}
+
+export interface Mercenary {
+  id: string;
+  name: string;
+  cost: number;
+  weaponBonus?: number;
+  defenseBonus?: number;
+  description?: string;
+}
+
 export interface Ship {
   id: string;
   name: string;
@@ -63,6 +85,14 @@ export interface Ship {
   status: 'idle' | 'loading' | 'sailing' | 'unloading';
   position: number; // 0-1 progress on route
   arrivalTime?: number;
+  weapons?: string[]; // ids of SecurityItem
+  defenses?: string[]; // ids of SecurityItem
+  mercenaries?: string[]; // ids of Mercenary
+  weaponScore?: number; // aggregated bonuses
+  defenseScore?: number; // aggregated bonuses
+  profitBonus?: number; // multiplier additive e.g., 0.1 for +10%
+  speedBonus?: number; // multiplier additive on duration e.g., 0.1 for +10% faster
+  lastEvent?: string;
 }
 
 export interface Route {
@@ -92,6 +122,25 @@ export interface Inventory {
   huymansPremium: number; // Basketball-skilled
 }
 
+export interface StarredResource {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: number;
+}
+
+export interface LegendaryItem {
+  id: string;
+  name: string;
+  kind: 'tech' | 'crew';
+  weaponBonus?: number;
+  defenseBonus?: number;
+  profitBonus?: number;
+  speedBonus?: number;
+  sellValue: number; // black market value
+  description?: string;
+}
+
 export interface GameState {
   player: Player;
   inventory: Inventory;
@@ -99,7 +148,9 @@ export interface GameState {
   currentTime: number;
   isPaused: boolean;
   tutorialComplete: boolean;
-  currentScreen: 'dashboard' | 'loading' | 'market' | 'routes' | 'tutorial';
+  currentScreen: 'dashboard' | 'loading' | 'market' | 'routes' | 'tutorial' | 'security';
+  starredResources: StarredResource[];
+  legendaries: LegendaryItem[];
 }
 
 export interface ValueDensity {

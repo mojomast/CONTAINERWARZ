@@ -70,10 +70,11 @@ export function calculateValueDensity(
 export function calculateShipmentProfit(
   cargoValue: number,
   routeMultiplier: number,
-  baseCost: number = 500
+  baseCost: number = 500,
+  extraCosts: number = 0
 ): number {
   const revenue = cargoValue * routeMultiplier;
-  const profit = revenue - baseCost;
+  const profit = revenue - baseCost - extraCosts;
   return Math.floor(profit);
 }
 

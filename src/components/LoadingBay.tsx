@@ -13,6 +13,7 @@ export default function LoadingBay() {
   const [selectedShip, setSelectedShip] = useState(ships[0]?.id || '');
   const [cargoType, setCargoType] = useState<'usffPC' | 'huyman'>('usffPC');
   const [isPremium, setIsPremium] = useState(false);
+  const [premiumIndex, setPremiumIndex] = useState(0);
   const [quantity, setQuantity] = useState(100);
 
   const ship = ships.find(s => s.id === selectedShip);
@@ -36,6 +37,10 @@ export default function LoadingBay() {
 
   const cargoData = CARGO_TYPES[cargoType];
   const container = ship?.containers[0];
+  const premiumOptions = cargoData.premiumVariants || [];
+  const chosenPremium = isPremium && premiumOptions.length > 0
+    ? premiumOptions[Math.max(0, Math.min(premiumIndex, premiumOptions.length - 1))]
+    : undefined;
   
   // Calculate capacity analysis
   const analysis = container ? calculateContainerCapacity(container.type, cargoData, container.efficiency) : null;
@@ -57,18 +62,20 @@ export default function LoadingBay() {
   const handleLoad = () => {
     if (!ship || !container) return;
     
-    const price = isPremium && cargoData.premiumVariants
-      ? cargoData.basePrice * cargoData.premiumVariants[0].multiplier
+    const price = isPremium && chosenPremium
+      ? cargoData.basePrice * chosenPremium.multiplier
       : cargoData.basePrice;
+    const extraPerUnit = isPremium && chosenPremium && chosenPremium.extraCostPerUnit ? chosenPremium.extraCostPerUnit : 0;
     
     const cargo = {
       cargoTypeId: cargoType,
       quantity: maxQuantity,
       isPremium,
-      premiumVariantName: isPremium && cargoData.premiumVariants ? cargoData.premiumVariants[0].name : undefined,
-      totalValue: maxQuantity * price,
+      premiumVariantName: isPremium && chosenPremium ? chosenPremium.name : undefined,
+      totalValue: Math.floor(maxQuantity * price),
       totalWeight: maxQuantity * cargoData.weight,
-      totalVolume: maxQuantity * cargoData.volume
+      totalVolume: maxQuantity * cargoData.volume,
+      totalExtraCost: Math.floor(maxQuantity * extraPerUnit)
     };
     
     loadCargoToContainer(ship.id, 0, cargo);
@@ -124,8 +131,18 @@ export default function LoadingBay() {
                       checked={cargoType === 'usffPC' && isPremium}
                       onChange={() => { setCargoType('usffPC'); setIsPremium(true); }}
                     />
-                    ✨ USFF PC Win11 ({inventory.usffPCsPremium} available)
+                    ✨ USFF PC Premium ({inventory.usffPCsPremium} available)
                   </label>
+                  {cargoType === 'usffPC' && isPremium && premiumOptions.length > 0 && (
+                    <div style={{marginLeft: 28, marginTop: 8}}>
+                      <label style={{marginRight:8}}>Variant:</label>
+                      <select value={premiumIndex} onChange={(e)=> setPremiumIndex(parseInt(e.target.value)||0)}>
+                        {premiumOptions.map((p, idx) => (
+                          <option key={p.name} value={idx}>{p.name} (x{p.multiplier} | +MC$ {p.extraCostPerUnit||0}/unit)</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
                 <div className="cargo-option">
                   <label>
@@ -146,8 +163,18 @@ export default function LoadingBay() {
                       checked={cargoType === 'huyman' && isPremium}
                       onChange={() => { setCargoType('huyman'); setIsPremium(true); }}
                     />
-                    🏀 Basketball Huyman ({inventory.huymansPremium} available)
+                    ✨ Premium Huyman ({inventory.huymansPremium} available)
                   </label>
+                  {cargoType === 'huyman' && isPremium && premiumOptions.length > 0 && (
+                    <div style={{marginLeft: 28, marginTop: 8}}>
+                      <label style={{marginRight:8}}>Variant:</label>
+                      <select value={premiumIndex} onChange={(e)=> setPremiumIndex(parseInt(e.target.value)||0)}>
+                        {premiumOptions.map((p, idx) => (
+                          <option key={p.name} value={idx}>{p.name} (x{p.multiplier} | +MC$ {p.extraCostPerUnit||0}/unit)</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               </div>
 

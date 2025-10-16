@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import LoadingBay from './components/LoadingBay';
 import Market from './components/Market';
 import Routes from './components/Routes';
+import Security from './components/Security';
 import './App.css';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
       {currentScreen === 'loading' && <LoadingBay />}
       {currentScreen === 'market' && <Market />}
       {currentScreen === 'routes' && <Routes />}
+      {currentScreen === 'security' && <Security />}
     </div>
   );
 }
