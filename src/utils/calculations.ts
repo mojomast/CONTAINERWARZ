@@ -1,5 +1,5 @@
-import type { CargoType, ContainerType, ContainerAnalysis, ValueDensity, ContainerSpecs } from '../types';
-import { CONTAINER_SPECS, LITERS_TO_CUBIC_FEET, KG_TO_POUNDS, M3_TO_CUBIC_FEET } from '../data/gameData';
+import type { CargoType, ContainerType, ContainerAnalysis, ValueDensity } from '../types';
+import { CONTAINER_SPECS, LITERS_TO_CUBIC_FEET, KG_TO_POUNDS } from '../data/gameData';
 
 export function calculateContainerCapacity(
   containerType: ContainerType,

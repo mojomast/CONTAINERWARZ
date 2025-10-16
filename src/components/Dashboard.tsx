@@ -1,6 +1,6 @@
 import { useGameStore } from '../store/gameStore';
 import { formatCurrency, getExperienceForNextLevel } from '../utils/calculations';
-import { Package, Ship, TrendingUp } from 'lucide-react';
+import { Package, Ship } from 'lucide-react';
 
 export default function Dashboard() {
   const player = useGameStore((state) => state.player);

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { GameState, Ship, Container, CargoItem, Route } from '../types';
+import type { GameState, CargoItem } from '../types';
 import { CARGO_TYPES, ROUTES } from '../data/gameData';
 import { calculateShipmentProfit, calculateExperienceGain, getLevelFromExperience } from '../utils/calculations';
 
@@ -101,7 +101,6 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     if (!ship || ship.status !== 'idle') return;
     
     // Deduct from inventory
-    const cargoType = CARGO_TYPES[cargo.cargoTypeId];
     let newInventory = { ...state.inventory };
     
     if (cargo.cargoTypeId === 'usffPC') {
@@ -215,7 +214,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     });
     
     const newLevel = getLevelFromExperience(newExperience);
-    const unlockedContainers = newLevel >= 5 ? ['20ft', '40ft'] : ['20ft'];
+    const unlockedContainers = (newLevel >= 5 ? (['20ft', '40ft'] as const) : (['20ft'] as const)) as unknown as GameState['player']['unlockedContainers'];
     const unlockedRoutes = newLevel >= 3 
       ? ['local-1', 'local-2', 'regional-1', 'regional-2']
       : ['local-1', 'local-2'];
